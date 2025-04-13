@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Event Management - Events Hub</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="../css/dashboard.css"> 
+</head>
+<body>
+    <div class="container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">Events Hub</div>
+            </div>
+            <div class="sidebar-menu">
+                <div class="nav-item">
+                    <i class="fas fa-chart-line"></i>
+                    <span>Dashboard</span>
+                </div>
+                <div class="nav-item active">
+                    <i class="fas fa-calendar-alt"></i>
+                    <span>Events</span>
+                </div>
+                <div class="nav-item">
+                    <i class="fas fa-ticket-alt"></i>
+                    <span>Tickets</span>
+                </div>
+                <div class="nav-item">
+                    <i class="fas fa-users"></i>
+                    <span>Customers</span>
+                </div>
+                <div class="nav-item">
+                    <i class="fas fa-chart-bar"></i>
+                    <span>Reports</span>
+                </div>
+                <div class="nav-item" id="logoutButton">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Log out</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Main content -->
+        <div class="main-content">
+            <div class="header">
+                <h1>Event Management</h1>
+                <div class="user-profile">
+                    <span>Admin User</span>
+                    <img src="/api/placeholder/40/40" alt="Admin profile">
+                </div>
+            </div>
+            
+            <!-- Search and Filter section -->
+            <div class="events-controls">
+                <div class="search-container">
+                    <input type="text" id="eventSearch" class="search-input" placeholder="Search events...">
+                    <button class="search-btn"><i class="fas fa-search"></i></button>
+                </div>
+                <div class="filter-container">
+                    <select id="eventStatusFilter" class="filter-select">
+                        <option value="all">All Statuses</option>
+                        <option value="active">Active</option>
+                        <option value="upcoming">Upcoming</option>
+                        <option value="completed">Completed</option>
+                        <option value="cancelled">Cancelled</option>
+                    </select>
+                    <select id="eventDateFilter" class="filter-select">
+                        <option value="all">All Dates</option>
+                        <option value="today">Today</option>
+                        <option value="this-week">This Week</option>
+                        <option value="this-month">This Month</option>
+                        <option value="this-year">This Year</option>
+                    </select>
+                </div>
+                <button id="addEventBtn" class="btn btn-primary">
+                    <i class="fas fa-plus"></i> Add New Event
+                </button>
+            </div>
+            
+            <!-- Events Table -->
+            <div class="events-table-container">
+                <table class="event-table" id="eventsTable">
+                    <thead>
+                        <tr>
+                            <th>Event Name <i class="fas fa-sort"></i></th>
+                            <th>Date <i class="fas fa-sort"></i></th>
+                            <th>Venue</th>
+                            <th>Tickets Sold <i class="fas fa-sort"></i></th>
+                            <th>Status</th>
+                            <th>Revenue <i class="fas fa-sort"></i></th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="eventsTableBody">
+                        <!-- Events will be loaded here via JavaScript -->
+                    </tbody>
+                </table>
+                <div id="eventsLoader" class="loader">
+                    <i class="fas fa-spinner fa-spin"></i> Loading events...
+                </div>
+                <div id="noEventsMessage" class="no-data-message" style="display: none;">
+                    No events found. Try adjusting your search or <button id="createEventBtn" class="inline-btn">create a new event</button>.
+                </div>
+            </div>
+            
+            <!-- Pagination -->
+            <div class="pagination">
+                <button class="pagination-btn" id="prevPage" disabled><i class="fas fa-chevron-left"></i></button>
+                <div id="pageNumbers" class="page-numbers">
+                    <span class="page-number active">1</span>
+                </div>
+                <button class="pagination-btn" id="nextPage"><i class="fas fa-chevron-right"></i></button>
+                <div class="page-size">
+                    <label for="pageSize">Show:</label>
+                    <select id="pageSize">
+                        <option value="10">10</option>
+                        <option value="25">25</option>
+                        <option value="50">50</option>
+                        <option value="100">100</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Add Event Modal -->
+    <div id="addEventModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">Add New Event</div>
+                <button class="close-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="eventForm">
+                    <div class="form-group">
+                        <label for="eventName">Event Name</label>
+                        <input type="text" id="eventName" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="eventDescription">Description</label>
+                        <textarea id="eventDescription" class="form-control" rows="3" required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="eventVenue">Venue</label>
+                        <input type="text" id="eventVenue" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="eventAddress">Address</label>
+                        <input type="text" id="eventAddress" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                            <div>
+                                <label for="eventStartDate">Start Date</label>
+                                <input type="date" id="eventStartDate" class="form-control" required>
+                            </div>
+                            <div>
+                                <label for="eventEndDate">End Date</label>
+                                <input type="date" id="eventEndDate" class="form-control">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                            <div>
+                                <label for="eventStartTime">Start Time</label>
+                                <input type="time" id="eventStartTime" class="form-control" required>
+                            </div>
+                            <div>
+                                <label for="eventEndTime">End Time</label>
+                                <input type="time" id="eventEndTime" class="form-control">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <h3 style="margin: 1.5rem 0 1rem;">Ticket Information</h3>
+                    
+                    <div class="ticket-section">
+                        <div class="ticket-header">
+                            <h4>Early Bird Tickets</h4>
+                        </div>
+                        <div class="ticket-form">
+                            <div class="form-group">
+                                <label for="earlyBirdPrice">Price ($)</label>
+                                <input type="number" id="earlyBirdPrice" class="form-control" min="0" step="0.01">
+                            </div>
+                            <div class="form-group">
+                                <label for="earlyBirdQuantity">Quantity</label>
+                                <input type="number" id="earlyBirdQuantity" class="form-control" min="0">
+                            </div>
+                            <div class="form-group">
+                                <label for="earlyBirdStartDate">Available From</label>
+                                <input type="date" id="earlyBirdStartDate" class="form-control">
+                            </div>
+                            <div class="form-group">
+                                <label for="earlyBirdEndDate">Available Until</label>
+                                <input type="date" id="earlyBirdEndDate" class="form-control">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="ticket-section">
+                        <div class="ticket-header">
+                            <h4>Regular Tickets</h4>
+                        </div>
+                        <div class="ticket-form">
+                            <div class="form-group">
+                                <label for="regularPrice">Price ($)</label>
+                                <input type="number" id="regularPrice" class="form-control" min="0" step="0.01">
+                            </div>
+                            <div class="form-group">
+                                <label for="regularQuantity">Quantity</label>
+                                <input type="number" id="regularQuantity" class="form-control" min="0">
+                            </div>
+                            <div class="form-group">
+                                <label for="regularStartDate">Available From</label>
+                                <input type="date" id="regularStartDate" class="form-control">
+                            </div>
+                            <div class="form-group">
+                                <label for="regularEndDate">Available Until</label>
+                                <input type="date" id="regularEndDate" class="form-control">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="ticket-section">
+                        <div class="ticket-header">
+                            <h4>VIP Tickets</h4>
+                        </div>
+                        <div class="ticket-form">
+                            <div class="form-group">
+                                <label for="vipPrice">Price ($)</label>
+                                <input type="number" id="vipPrice" class="form-control" min="0" step="0.01">
+                            </div>
+                            <div class="form-group">
+                                <label for="vipQuantity">Quantity</label>
+                                <input type="number" id="vipQuantity" class="form-control" min="0">
+                            </div>
+                            <div class="form-group">
+                                <label for="vipStartDate">Available From</label>
+                                <input type="date" id="vipStartDate" class="form-control">
+                            </div>
+                            <div class="form-group">
+                                <label for="vipEndDate">Available Until</label>
+                                <input type="date" id="vipEndDate" class="form-control">
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="cancelEventBtn">Cancel</button>
+                <button class="btn btn-primary" id="saveEventBtn">Save Event</button>
+            </div>
+        </div>
+    </div>
+    <script src="../js/dashboard.js"></script>
+    <script src="../js/eventspage.js"></script>
+</body>
+</html>

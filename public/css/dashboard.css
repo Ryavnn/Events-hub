@@ -432,3 +432,6 @@ body {
 .btn-secondary:hover {
     background-color: var(--gray-300);
 }
+.modal.show {
+    display: block;
+}

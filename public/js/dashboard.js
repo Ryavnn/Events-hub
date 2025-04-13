@@ -17,58 +17,64 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // Set up all event listeners
 function setupEventListeners() {
-    // Modal handlers
-    addEventBtn.addEventListener('click', openModal);
-    closeModalBtn.addEventListener('click', closeModal);
-    cancelEventBtn.addEventListener('click', closeModal);
-    saveEventBtn.addEventListener('click', saveEvent);
-    
-    // Close modal when clicking outside
-    window.addEventListener('click', function(e) {
-        if (e.target === addEventModal) {
-            closeModal();
-        }
+  // ✅ Only nav-item logic inside the loop
+  document.querySelectorAll(".nav-item").forEach((item) => {
+    item.addEventListener("click", function () {
+      const section = this.querySelector("span").textContent;
+      if (section === "Dashboard") window.location.href = "dashboard.html";
+      else if (section === "Events") window.location.href = "events.html";
+      else if (section === "Tickets") window.location.href = "tickets.html";
+      else if (section === "Customers") window.location.href = "customers.html";
+      else if (section === "Reports") window.location.href = "reports.html";
     });
-    
-    // Tab navigation
-    tabButtons.forEach(button => {
-        button.addEventListener('click', function() {
-            const tabName = this.getAttribute('data-tab');
-            switchTab(tabName);
-        });
+  });
+
+  // ✅ Modal handlers
+  addEventBtn.addEventListener("click", openModal);
+  closeModalBtn.addEventListener("click", closeModal);
+  cancelEventBtn.addEventListener("click", closeModal);
+  saveEventBtn.addEventListener("click", saveEvent);
+
+  // ✅ Close modal when clicking outside
+  window.addEventListener("click", function (e) {
+    if (e.target === addEventModal) closeModal();
+  });
+
+  // ✅ Tab navigation
+  tabButtons.forEach((button) => {
+    button.addEventListener("click", function () {
+      const tabName = this.getAttribute("data-tab");
+      switchTab(tabName);
     });
-    
-    // Chart period toggles
-    chartActions.forEach(button => {
-        button.addEventListener('click', function() {
-            chartActions.forEach(btn => btn.classList.remove('active'));
-            this.classList.add('active');
-            updateChartData(this.textContent);
-        });
+  });
+
+  // ✅ Chart period toggles
+  chartActions.forEach((button) => {
+    button.addEventListener("click", function () {
+      chartActions.forEach((btn) => btn.classList.remove("active"));
+      this.classList.add("active");
+      updateChartData(this.textContent);
     });
-    
-    // Event action buttons
-    const actionButtons = document.querySelectorAll('.action-btn');
-    actionButtons.forEach(button => {
-        button.addEventListener('click', function(e) {
-            const action = this.querySelector('i').className;
-            const eventRow = this.closest('tr');
-            const eventName = eventRow.querySelector('td:first-child').textContent;
-            
-            if (action.includes('fa-edit')) {
-                editEvent(eventName);
-            } else if (action.includes('fa-chart-bar')) {
-                viewEventStats(eventName);
-            } else if (action.includes('fa-trash')) {
-                deleteEvent(eventName, eventRow);
-            } else if (action.includes('fa-download')) {
-                downloadEventReport(eventName);
-            }
-            
-            e.stopPropagation();
-        });
+  });
+
+  // ✅ Action buttons (edit, delete, etc.)
+  const actionButtons = document.querySelectorAll(".action-btn");
+  actionButtons.forEach((button) => {
+    button.addEventListener("click", function (e) {
+      const action = this.querySelector("i").className;
+      const eventRow = this.closest("tr");
+      const eventName = eventRow.querySelector("td:first-child").textContent;
+
+      if (action.includes("fa-edit")) editEvent(eventName);
+      else if (action.includes("fa-chart-bar")) viewEventStats(eventName);
+      else if (action.includes("fa-trash")) deleteEvent(eventName, eventRow);
+      else if (action.includes("fa-download")) downloadEventReport(eventName);
+
+      e.stopPropagation();
     });
+  });
 }
+
 
 // Modal functions
 function openModal() {

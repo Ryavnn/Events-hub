@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ticket Management - Events Hub</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="../css/dashboard.css"> 
+</head>
+<body>
+    <div class="container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">Events Hub</div>
+            </div>
+            <div class="sidebar-menu">
+                <div class="nav-item">
+                    <i class="fas fa-chart-line"></i>
+                    <span>Dashboard</span>
+                </div>
+                <div class="nav-item">
+                    <i class="fas fa-calendar-alt"></i>
+                    <span>Events</span>
+                </div>
+                <div class="nav-item active">
+                    <i class="fas fa-ticket-alt"></i>
+                    <span>Tickets</span>
+                </div>
+                <div class="nav-item">
+                    <i class="fas fa-users"></i>
+                    <span>Customers</span>
+                </div>
+                <div class="nav-item">
+                    <i class="fas fa-chart-bar"></i>
+                    <span>Reports</span>
+                </div>
+                <div class="nav-item" id="logoutButton">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Log out</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Main content -->
+        <div class="main-content">
+            <div class="header">
+                <h1>Ticket Management</h1>
+                <div class="user-profile">
+                    <span>Admin User</span>
+                    <img src="/api/placeholder/40/40" alt="Admin profile">
+                </div>
+            </div>
+            
+            <!-- Search and Filter section -->
+            <div class="events-controls">
+                <div class="search-container">
+                    <input type="text" id="ticketSearch" class="search-input" placeholder="Search tickets...">
+                    <button class="search-btn"><i class="fas fa-search"></i></button>
+                </div>
+                <div class="filter-container">
+                    <select id="eventFilter" class="filter-select">
+                        <option value="all">All Events</option>
+                        <option value="summer-music-festival">Summer Music Festival</option>
+                        <option value="tech-conference">Tech Conference 2025</option>
+                        <option value="comedy-night">Comedy Night Special</option>
+                        <option value="jazz-in-the-park">Jazz in the Park</option>
+                        <option value="business-summit">Business Summit</option>
+                    </select>
+                    <select id="ticketTypeFilter" class="filter-select">
+                        <option value="all">All Ticket Types</option>
+                        <option value="early-bird">Early Bird</option>
+                        <option value="regular">Regular</option>
+                        <option value="vip">VIP</option>
+                    </select>
+                    <select id="ticketStatusFilter" class="filter-select">
+                        <option value="all">All Statuses</option>
+                        <option value="available">Available</option>
+                        <option value="sold">Sold</option>
+                        <option value="reserved">Reserved</option>
+                        <option value="cancelled">Cancelled</option>
+                    </select>
+                </div>
+                <button id="createTicketBtn" class="btn btn-primary">
+                    <i class="fas fa-plus"></i> Add New Ticket Type
+                </button>
+            </div>
+            
+            <!-- Ticket Types Summary -->
+            <div class="dashboard-card">
+                <div class="card-header">
+                    <h2>Ticket Types Overview</h2>
+                    <div class="card-actions">
+                        <button class="btn btn-sm btn-outline" id="exportTicketTypesBtn">
+                            <i class="fas fa-download"></i> Export
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <table class="summary-table">
+                        <thead>
+                            <tr>
+                                <th>Ticket Type</th>
+                                <th>Available</th>
+                                <th>Sold</th>
+                                <th>Reserved</th>
+                                <th>Revenue</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Early Bird Tickets</td>
+                                <td>342</td>
+                                <td>1,658</td>
+                                <td>0</td>
+                                <td>$24,870</td>
+                                <td><span class="badge badge-success">Active</span></td>
+                            </tr>
+                            <tr>
+                                <td>Regular Tickets</td>
+                                <td>1,245</td>
+                                <td>1,755</td>
+                                <td>100</td>
+                                <td>$52,650</td>
+                                <td><span class="badge badge-success">Active</span></td>
+                            </tr>
+                            <tr>
+                                <td>VIP Tickets</td>
+                                <td>87</td>
+                                <td>413</td>
+                                <td>50</td>
+                                <td>$41,300</td>
+                                <td><span class="badge badge-warning">Selling Fast</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <!-- Tickets List -->
+            <div class="dashboard-card">
+                <div class="card-header">
+                    <h2>Individual Tickets</h2>
+                    <div class="card-actions">
+                        <button class="view-toggle active" data-view="list"><i class="fas fa-list"></i></button>
+                        <button class="view-toggle" data-view="grid"><i class="fas fa-th"></i></button>
+                    </div>
+                </div>
+                <div class="ticket-list-view">
+                    <table class="event-table" id="ticketsTable">
+                        <thead>
+                            <tr>
+                                <th>Ticket ID <i class="fas fa-sort"></i></th>
+                                <th>Event <i class="fas fa-sort"></i></th>
+                                <th>Ticket Type</th>
+                                <th>Customer</th>
+                                <th>Purchase Date <i class="fas fa-sort"></i></th>
+                                <th>Price <i class="fas fa-sort"></i></th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="ticketsTableBody">
+                            <tr>
+                                <td>#TK-10045</td>
+                                <td>Summer Music Festival</td>
+                                <td>VIP</td>
+                                <td>John Smith</td>
+                                <td>Apr 05, 2025</td>
+                                <td>$120.00</td>
+                                <td><span class="badge badge-success">Sold</span></td>
+                                <td>
+                                    <button class="action-btn"><i class="fas fa-eye"></i></button>
+                                    <button class="action-btn"><i class="fas fa-edit"></i></button>
+                                    <button class="action-btn"><i class="fas fa-print"></i></button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>#TK-10046</td>
+                                <td>Tech Conference 2025</td>
+                                <td>Regular</td>
+                                <td>Emily Johnson</td>
+                                <td>Apr 05, 2025</td>
+                                <td>$75.00</td>
+                                <td><span class="badge badge-success">Sold</span></td>
+                                <td>
+                                    <button class="action-btn"><i class="fas fa-eye"></i></button>
+                                    <button class="action-btn"><i class="fas fa-edit"></i></button>
+                                    <button class="action-btn"><i class="fas fa-print"></i></button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>#TK-10047</td>
+                                <td>Comedy Night Special</td>
+                                <td>Early Bird</td>
+                                <td>Michael Davis</td>
+                                <td>Apr 06, 2025</td>
+                                <td>$45.00</td>
+                                <td><span class="badge badge-success">Sold</span></td>
+                                <td>
+                                    <button class="action-btn"><i class="fas fa-eye"></i></button>
+                                    <button class="action-btn"><i class="fas fa-edit"></i></button>
+                                    <button class="action-btn"><i class="fas fa-print"></i></button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>#TK-10048</td>
+                                <td>Tech Conference 2025</td>
+                                <td>VIP</td>
+                                <td>Sarah Wilson</td>
+                                <td>Apr 06, 2025</td>
+                                <td>$150.00</td>
+                                <td><span class="badge badge-success">Sold</span></td>
+                                <td>
+                                    <button class="action-btn"><i class="fas fa-eye"></i></button>
+                                    <button class="action-btn"><i class="fas fa-edit"></i></button>
+                                    <button class="action-btn"><i class="fas fa-print"></i></button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>#TK-10049</td>
+                                <td>Jazz in the Park</td>
+                                <td>Regular</td>
+                                <td>Robert Miller</td>
+                                <td>Apr 07, 2025</td>
+                                <td>$60.00</td>
+                                <td><span class="badge badge-warning">Reserved</span></td>
+                                <td>
+                                    <button class="action-btn"><i class="fas fa-eye"></i></button>
+                                    <button class="action-btn"><i class="fas fa-edit"></i></button>
+                                    <button class="action-btn"><i class="fas fa-times"></i></button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>#TK-10050</td>
+                                <td>Business Summit</td>
+                                <td>Early Bird</td>
+                                <td>Jennifer Brown</td>
+                                <td>Apr 07, 2025</td>
+                                <td>$85.00</td>
+                                <td><span class="badge badge-success">Sold</span></td>
+                                <td>
+                                    <button class="action-btn"><i class="fas fa-eye"></i></button>
+                                    <button class="action-btn"><i class="fas fa-edit"></i></button>
+                                    <button class="action-btn"><i class="fas fa-print"></i></button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>#TK-10051</td>
+                                <td>Summer Music Festival</td>
+                                <td>Regular</td>
+                                <td>David Lee</td>
+                                <td>Apr 08, 2025</td>
+                                <td>$85.00</td>
+                                <td><span class="badge badge-danger">Cancelled</span></td>
+                                <td>
+                                    <button class="action-btn"><i class="fas fa-eye"></i></button>
+                                    <button class="action-btn"><i class="fas fa-redo"></i></button>
+                                    <button class="action-btn"><i class="fas fa-trash"></i></button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="ticket-grid-view" style="display: none;">
+                    <div class="ticket-grid">
+                        <div class="ticket-card">
+                            <div class="ticket-card-header">
+                                <div class="ticket-id">#TK-10045</div>
+                                <div class="ticket-status sold">Sold</div>
+                            </div>
+                            <div class="ticket-card-body">
+                                <div class="ticket-event">Summer Music Festival</div>
+                                <div class="ticket-type">VIP Ticket</div>
+                                <div class="ticket-customer">John Smith</div>
+                                <div class="ticket-date">Apr 05, 2025</div>
+                                <div class="ticket-price">$120.00</div>
+                            </div>
+                            <div class="ticket-card-footer">
+                                <button class="action-btn"><i class="fas fa-eye"></i></button>
+                                <button class="action-btn"><i class="fas fa-edit"></i></button>
+                                <button class="action-btn"><i class="fas fa-print"></i></button>
+                            </div>
+                        </div>
+                        
+                        <div class="ticket-card">
+                            <div class="ticket-card-header">
+                                <div class="ticket-id">#TK-10046</div>
+                                <div class="ticket-status sold">Sold</div>
+                            </div>
+                            <div class="ticket-card-body">
+                                <div class="ticket-event">Tech Conference 2025</div>
+                                <div class="ticket-type">Regular Ticket</div>
+                                <div class="ticket-customer">Emily Johnson</div>
+                                <div class="ticket-date">Apr 05, 2025</div>
+                                <div class="ticket-price">$75.00</div>
+                            </div>
+                            <div class="ticket-card-footer">
+                                <button class="action-btn"><i class="fas fa-eye"></i></button>
+                                <button class="action-btn"><i class="fas fa-edit"></i></button>
+                                <button class="action-btn"><i class="fas fa-print"></i></button>
+                            </div>
+                        </div>
+                        
+                        <div class="ticket-card">
+                            <div class="ticket-card-header">
+                                <div class="ticket-id">#TK-10047</div>
+                                <div class="ticket-status sold">Sold</div>
+                            </div>
+                            <div class="ticket-card-body">
+                                <div class="ticket-event">Comedy Night Special</div>
+                                <div class="ticket-type">Early Bird Ticket</div>
+                                <div class="ticket-customer">Michael Davis</div>
+                                <div class="ticket-date">Apr 06, 2025</div>
+                                <div class="ticket-price">$45.00</div>
+                            </div>
+                            <div class="ticket-card-footer">
+                                <button class="action-btn"><i class="fas fa-eye"></i></button>
+                                <button class="action-btn"><i class="fas fa-edit"></i></button>
+                                <button class="action-btn"><i class="fas fa-print"></i></button>
+                            </div>
+                        </div>
+                        
+                        <div class="ticket-card">
+                            <div class="ticket-card-header">
+                                <div class="ticket-id">#TK-10048</div>
+                                <div class="ticket-status sold">Sold</div>
+                            </div>
+                            <div class="ticket-card-body">
+                                <div class="ticket-event">Tech Conference 2025</div>
+                                <div class="ticket-type">VIP Ticket</div>
+                                <div class="ticket-customer">Sarah Wilson</div>
+                                <div class="ticket-date">Apr 06, 2025</div>
+                                <div class="ticket-price">$150.00</div>
+                            </div>
+                            <div class="ticket-card-footer">
+                                <button class="action-btn"><i class="fas fa-eye"></i></button>
+                                <button class="action-btn"><i class="fas fa-edit"></i></button>
+                                <button class="action-btn"><i class="fas fa-print"></i></button>
+                            </div>
+                        </div>
+                        
+                        <div class="ticket-card">
+                            <div class="ticket-card-header">
+                                <div class="ticket-id">#TK-10049</div>
+                                <div class="ticket-status reserved">Reserved</div>
+                            </div>
+                            <div class="ticket-card-body">
+                                <div class="ticket-event">Jazz in the Park</div>
+                                <div class="ticket-type">Regular Ticket</div>
+                                <div class="ticket-customer">Robert Miller</div>
+                                <div class="ticket-date">Apr 07, 2025</div>
+                                <div class="ticket-price">$60.00</div>
+                            </div>
+                            <div class="ticket-card-footer">
+                                <button class="action-btn"><i class="fas fa-eye"></i></button>
+                                <button class="action-btn"><i class="fas fa-edit"></i></button>
+                                <button class="action-btn"><i class="fas fa-times"></i></button>
+                            </div>
+                        </div>
+                        
+                        <div class="ticket-card">
+                            <div class="ticket-card-header">
+                                <div class="ticket-id">#TK-10050</div>
+                                <div class="ticket-status sold">Sold</div>
+                            </div>
+                            <div class="ticket-card-body">
+                                <div class="ticket-event">Business Summit</div>
+                                <div class="ticket-type">Early Bird Ticket</div>
+                                <div class="ticket-customer">Jennifer Brown</div>
+                                <div class="ticket-date">Apr 07, 2025</div>
+                                <div class="ticket-price">$85.00</div>
+                            </div>
+                            <div class="ticket-card-footer">
+                                <button class="action-btn"><i class="fas fa-eye"></i></button>
+                                <button class="action-btn"><i class="fas fa-edit"></i></button>
+                                <button class="action-btn"><i class="fas fa-print"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Pagination -->
+            <div class="pagination">
+                <button class="pagination-btn" id="prevPage" disabled><i class="fas fa-chevron-left"></i></button>
+                <div id="pageNumbers" class="page-numbers">
+                    <span class="page-number active">1</span>
+                    <span class="page-number">2</span>
+                    <span class="page-number">3</span>
+                </div>
+                <button class="pagination-btn" id="nextPage"><i class="fas fa-chevron-right"></i></button>
+                <div class="page-size">
+                    <label for="pageSize">Show:</label>
+                    <select id="pageSize">
+                        <option value="10">10</option>
+                        <option value="25">25</option>
+                        <option value="50">50</option>
+                        <option value="100">100</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Add Ticket Type Modal -->
+    <div id="addTicketModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">Add New Ticket Type</div>
+                <button class="close-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="ticketForm">
+                    <div class="form-group">
+                        <label for="ticketEvent">Event</label>
+                        <select id="ticketEvent" class="form-control" required>
+                            <option value="">Select Event</option>
+                            <option value="summer-music-festival">Summer Music Festival</option>
+                            <option value="tech-conference">Tech Conference 2025</option>
+                            <option value="comedy-night">Comedy Night Special</option>
+                            <option value="jazz-in-the-park">Jazz in the Park</option>
+                            <option value="business-summit">Business Summit</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="ticketName">Ticket Name</label>
+                        <input type="text" id="ticketName" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="ticketDescription">Description</label>
+                        <textarea id="ticketDescription" class="form-control" rows="3"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="ticketPrice">Price ($)</label>
+                        <input type="number" id="ticketPrice" class="form-control" min="0" step="0.01" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="ticketQuantity">Quantity</label>
+                        <input type="number" id="ticketQuantity" class="form-control" min="0" required>
+                    </div>
+                    <div class="form-group">
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                            <div>
+                                <label for="ticketStartDate">Available From</label>
+                                <input type="date" id="ticketStartDate" class="form-control" required>
+                            </div>
+                            <div>
+                                <label for="ticketEndDate">Available Until</label>
+                                <input type="date" id="ticketEndDate" class="form-control" required>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <h3 style="margin: 1.5rem 0 1rem;">Additional Options</h3>
+                    
+                    <div class="form-group">
+                        <label for="ticketMaxPerOrder">Maximum Tickets Per Order</label>
+                        <input type="number" id="ticketMaxPerOrder" class="form-control" min="1" value="4">
+                    </div>
+                    
+                    <div class="form-group">
+                        <div class="checkbox-group">
+                            <input type="checkbox" id="showRemainingTickets">
+                            <label for="showRemainingTickets">Show remaining tickets count on sales page</label>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <div class="checkbox-group">
+                            <input type="checkbox" id="enablePromoCode">
+                            <label for="enablePromoCode">Enable promotional code for this ticket</label>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <div class="checkbox-group">
+                            <input type="checkbox" id="enableWaitlist">
+                            <label for="enableWaitlist">Enable waitlist when sold out</label>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="cancelTicketBtn">Cancel</button>
+                <button class="btn btn-primary" id="saveTicketBtn">Save Ticket</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- View Ticket Modal -->
+    <div id="viewTicketModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">Ticket #TK-10045</div>
+                <button class="close-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="ticket-details">
+                    <div class="ticket-detail-row">
+                        <div class="detail-label">Event:</div>
+                        <div class="detail-value">Summer Music Festival</div>
+                    </div>
+                    <div class="ticket-detail-row">
+                        <div class="detail-label">Ticket Type:</div>
+                        <div class="detail-value">VIP</div>
+                    </div>
+                    <div class="ticket-detail-row">
+                        <div class="detail-label">Purchase Date:</div>
+                        <div class="detail-value">Apr 05, 2025</div>
+                    </div>
+                    <div class="ticket-detail-row">
+                        <div class="detail-label">Price:</div>
+                        <div class="detail-value">$120.00</div>
+                    </div>
+                    <div class="ticket-detail-row">
+                        <div class="detail-label">Status:</div>
+                        <div class="detail-value"><span class="badge badge-success">Sold</span></div>
+                    </div>
+                    
+                    <div class="ticket-section-divider"></div>
+                    
+                    <div class="ticket-detail-row">
+                        <div class="detail-label">Customer Name:</div>
+                        <div class="detail-value">John Smith</div>
+                    </div>
+                    <div class="ticket-detail-row">
+                        <div class="detail-label">Email:</div>
+                        <div class="detail-value">john.smith@example.com</div>
+                    </div>
+                    <div class="ticket-detail-row">
+                        <div class="detail-label">Phone:</div>
+                        <div class="detail-value">(555) 123-4567</div>
+                    </div>
+                    
+                    <div class="ticket-section-divider"></div>
+                    
+                    <div class="ticket-detail-row">
+                        <div class="detail-label">Payment Method:</div>
+                        <div class="detail-value">Credit Card (VISA ****1234)</div>
+                    </div>
+                    <div class="ticket-detail-row">
+                        <div class="detail-label">Transaction ID:</div>
+                        <div class="detail-value">TRX-9876543210</div>
+                    </div>
+                    <div class="ticket-detail-row">
+                        <div class="detail-label">Billing Address:</div>
+                        <div class="detail-value">123 Main St, Anytown, ST 12345</div>
+                    </div>
+                    
+                    <div class="ticket-section-divider"></div>
+                    
+                    <div class="ticket-qr-code">
+                        <img src="/api/placeholder/150/150" alt="Ticket QR Code">
+                        <div class="qr-code-caption">Scan for verification</div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="closeTicketBtn">Close</button>
+                <button class="btn btn-primary" id="printTicketBtn"><i class="fas fa-print"></i> Print Ticket</button>
+                <button class="btn btn-success" id="emailTicketBtn"><i class="fas fa-envelope"></i> Email to Customer</button>
+            </div>
+        </div>
+    </div>
+    
+    <script src="../js/dashboard.js"></script>
+    <script src="../js/tickets.js"></script>
+</body>
+</html>
