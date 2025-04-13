@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Events Checkout</title>
+        <link rel="stylesheet" href="../css/styles.css"> 
+    </head>
+<body>
+        <nav class="navbar">
+            <div class="navdiv">
+                <div class="logo">Events Hub</div>
+                <div class="custom-links">
+                <ul>
+                    <li><a href ="../mainpage/index.html">Home</a></li>
+                    <li><a href="../mainpage/aboutus.html">About Us</a></li>
+                    <li><a href="#main-footer">Contact</a></li>
+                </ul>    
+                </div>
+            </div>            
+        </nav>
+
+        <div class="container">
+            <h3>Event checkout</h3>
+            
+            <div class="checkout-grid">
+              <div class="checkout-form">
+                <div class="section-title">Billing details</div>
+                
+                <div class="form-group">
+                  <label for="fullname">Full names</label>
+                  <input type="text" id="fullname" name="fullname">
+                </div>
+                
+                <div class="form-group">
+                  <label for="phone">Phone Number</label>
+                  <input type="number" id="phone" name="phone">
+                </div>
+                
+                <div class="form-group">
+                  <label for="email">Email</label>
+                  <input type="email" id="email" name="email">
+                </div>
+                
+                <div class="section-title">Payment options</div>
+                
+                <div class="payment-option">
+                  <input type="radio" id="mpesa" name="payment" value="mpesa">
+                  <img src="../images/stripelogo.png" alt="Stripe" class="payment-logo" style="max-width: 120px;">
+                </div>
+                
+                <div class="payment-option">
+                  <input type="radio" id="pesapal" name="payment" value="pesapal">
+                  <img src="../images/pesapallogo.png" alt="PesaPal" class="payment-logo">
+                  <div class="card-icons">
+                    <img src="../images/visalogo.png" alt="Visa" class="card-icon">
+                    <img src="../images/mastercardlogo.png" alt="Mastercard" class="card-icon">
+                    <span class="more-text">and more ...</span>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="checkout-summary">
+                <div class="section-title">Total</div>
+                
+                <div class="summary-row grandtotal">
+                  <p>Grandtotal: <span id="grandtotal"></span></p>
+                  <span></span>
+                </div>
+                
+                <div class="privacy-notice">
+                  Your personal data will be used to process your order
+                  and for other purposes described in our
+                  <a href="pi.html" class="privacy-link">privacy policy</a>.
+                </div>
+                
+                <button class="checkout-button">Checkout</button>
+                <div id="message"></div>
+              </div>
+            </div>
+          </div>
+        
+    <section id="main-footer">
+        <div class="main-footer">
+            <h3>Get In Touch</h3>
+            <ul>
+                <li>Contact: 0024-323-323</li>
+                <li>Email: infoeventshub@gmail.com</li>
+                <li><a href="pi.html">Privacy information</a></li>
+                <li><a href="login.html">Admin</a></li>
+            </ul>   
+        <footer id="main-footer">
+            <p>&copy;2025 Events Hub. All Rights Reserved.</p>
+        </footer>
+        </div>
+    </section>
+    <script src="../js/checkout.js"></script>
+</body>
+</html>

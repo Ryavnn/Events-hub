@@ -1,0 +1,220 @@
+*{
+    text-decoration: none;
+}
+/*main page styling*/
+body{
+    background-color: #fdfdfd;
+    color: #000000;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 16px;
+    font-weight: normal;
+    line-height: 1.6em;
+    margin: 0;
+}
+
+/*navigation styling*/
+
+.navbar{
+    background: #000000; align-items: center;
+    padding-right: 10px; padding-left: 10px;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    }
+.navdiv{
+    display:flex; align-items: center; justify-content: space-between;
+    }
+    
+    .logo{
+        font-size: 30px; font-weight: 600;color:orange;
+    }
+    
+    li{
+    list-style: none; display: inline-block;
+    }
+    
+    .custom-links a {
+        color: #ff6600; 
+    }
+    
+    .custom-links a:hover {
+        color: white; 
+    }
+
+/*footer styling*/
+
+.main-footer{
+    
+    /*background design*/
+        width: 100%;
+        height: 100%;
+        --s: 200px; /* control the size */
+        --c1: #1d1d1d;
+        --c2: #4e4f51;
+        --c3: #3c3c3c;
+      
+        background: repeating-conic-gradient(
+              from 30deg,
+              #0000 0 120deg,
+              var(--c3) 0 180deg
+            )
+            calc(0.5 * var(--s)) calc(0.5 * var(--s) * 0.577),
+          repeating-conic-gradient(
+            from 30deg,
+            var(--c1) 0 60deg,
+            var(--c2) 0 120deg,
+            var(--c3) 0 180deg
+          );
+        background-size: var(--s) calc(var(--s) * 0.577);
+        
+        text-align: center;
+        color:orange;
+        padding: 1rem 0;
+        font-size: 0.875rem;
+    li{
+        list-style: none; display: block;
+    }
+    
+    a{
+        color: orange; 
+    }
+    a:hover {
+        color: #ffffff; 
+    }
+}  
+/*Image Header*/
+
+#hero1{
+    background-image: url('../images/banners/herogallery.png');
+    height: 50vh;
+    width: 100%;
+    background-size: cover;
+    background-position: top 25% center ;
+}
+#hero2{
+    background-image: url('../images/banners/herogroove.jpg');
+    height: 50vh;
+    width: 100%;
+    background-size: cover;
+    background-position: top 25% left ;
+}
+#hero3{
+    background-image: url('../images/banners/heroio.jpg');
+    height: 50vh;
+    width: 100%;
+    background-size: cover;
+    background-position: top 25% center ;
+}
+#hero4{
+    background-image: url('../images/banners/herokiama.jpg');
+    height: 50vh;
+    width: 100%;
+    background-size: cover;
+    background-position: top 25% center ;
+}
+#hero5{
+    background-image: url('../images/banners/heroneighbourhood.png');
+    height: 50vh;
+    width: 100%;
+    background-size: cover;
+    background-position: top 25% center ;
+}
+#hero6{
+    background-image: url('../images/banners/herowadidegla.png');
+    height: 50vh;
+    width: 100%;
+    background-size: cover;
+    background-position: top 25% center ;
+}
+#hero7{
+    background-image: url('../images/banners/heroshaka.jpeg');
+    height: 50vh;
+    width: 100%;
+    background-size: cover;
+    background-position: top 25% center ;
+}
+#hero8{
+    background-image: url('../images/banners/heroaviary.jpeg');
+    height: 50vh;
+    width: 100%;
+    background-size: cover;
+    background-position: top 25% center ;
+}
+/*divider styling*/
+.divider {
+    border-bottom: 1px solid #eee;
+    margin: 20px 0;
+  }
+
+/* Event Details*/
+#eventdetails{
+    border: 3px  #000000;
+    border-radius: 30px;
+    padding: 20px;
+    margin: 20px 0;
+    background-color: #EFF0FF;
+}
+
+/* Ticket Details*/
+#ticketdetails{
+    border: 3px  #000000;
+    border-radius: 30px;
+    padding: 20px;
+    margin: 20px 0;
+    background-color: #EFF0FF;
+}
+
+/*Ticket button to checkout*/
+button {
+    background-color: #fff;
+    color: black;
+    border: 2px solid #000;
+    padding: 10px 15px;
+    border-radius: 5px;
+    letter-spacing: 0.1em;
+    font-weight: 700;
+    padding: 1.25em 2em;
+    cursor: pointer;
+    transition: all 0.3s ease-in-out;
+  }
+  
+  button:hover {
+    color: #f1ae18;
+    background: black
+  }
+  
+  .error-message {
+    color: red;
+    margin-top: 10px;
+  }
+
+/*Tickets section*/
+.container2 {
+    max-width: 600px;
+    margin: auto;
+    background: #EFF0FF;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  }
+  
+.ticket-options {
+    display: flex;
+    flex-direction: column;
+  }
+  
+.ticket {
+    background: #e9ecef;
+    margin: 10px 0;
+    padding: 15px;
+    border-radius: 5px;
+  }
+  
+.ticket h3 {
+    margin: 0;
+  }
+  
+input[type="number"] {
+    width: 100px;
+    margin-left: 10px;
+  }

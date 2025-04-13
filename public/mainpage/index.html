@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Events Hub</title>
+        <link rel="stylesheet" href="../css/styles.css"> 
+    </head>
+<body>
+        <nav class="navbar">
+            <div class="navdiv">
+                <div class="logo">Events Hub</div>
+                <div class="custom-links">
+                <ul>
+                    <li><a href ="../mainpage/index.html">Home</a></li>
+                    <li><a href="../mainpage/aboutus.html">About Us</a></li>
+                    <li><a href="#main-footer">Contact</a></li>
+                </ul>    
+                </div>
+            </div>            
+        </nav>
+<!--events subsection-->
+    <section id="upcoming-events">
+        <h2>Upcoming Events</h2>
+        
+        <div class="event-gallery">
+            <a href="../eventpages/gallery.html">
+                <img src="../images/gallery-event.png">
+            </a>
+            <a href="../eventpages/aviary.html">
+                <img src="../images/aviary-event.jpeg">
+            </a>
+            <a href="../eventpages/shaka.html">
+                <img src="../images/shaka-event.jpeg">
+            </a>
+            <a href="../eventpages/neighbourhood.html">
+                <img src="../images/neighbourhood-event.png">
+            </a>
+            <a href="../eventpages/io.html">
+                <img src="../images/io-event.jpg">
+            </a>
+        </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <section id="past-events">
+        <h2>Past Events</h2>
+
+        <div class="event-gallery">      
+        <a href="../eventpages/wadidegla.html">
+            <img src="../images/wadidegla-event.png">
+        </a>      
+        <a href="../eventpages/groove.html">
+            <img src="../images/groove-event.jpg">
+        </a>
+        <a href="../eventpages/kiama.html">
+            <img src="../images/kiama-event.jpg">
+        </a>
+
+        </div>       
+    </section>
+
+    <section id="main-footer">
+        <div class="main-footer">
+            <h3>Get In Touch</h3>
+            <ul>
+                <li>Contact: 0024-323-323</li>
+                <li>Email: infoeventshub@gmail.com</li>
+                <li><a href="pi.html">Privacy information</a></li>
+                <li><a href="login.html">Admin</a></li>
+            </ul>   
+        <footer id="main-footer">
+            <p>&copy;2025 Events Hub. All Rights Reserved.</p>
+        </footer>
+        </div>
+    </section>
+    <!-- Add this modal structure to your index.html file -->
+<div id="event-modal" class="modal">
+    <div class="modal-content">
+      <span class="close-modal">&times;</span>
+      <div class="modal-header">
+        <h2 id="modal-event-title">Event Title</h2>
+        <img id="modal-event-image" src="" alt="Event image">
+      </div>
+      <div class="modal-body">
+        <div id="modal-event-details">
+          <p id="modal-event-description">Event description will appear here.</p>
+          <p id="modal-event-date">Date: TBD</p>
+          <p id="modal-event-location">Location: TBD</p>
+        </div>
+        <div class="ticket-selection">
+          <h3>Select Tickets</h3>
+          <div class="ticket-type">
+            <div class="ticket-info">
+              <h4>Early Bird</h4>
+              <p id="early-bird-price">$0</p>
+            </div>
+            <div class="ticket-quantity">
+              <button class="quantity-btn minus-btn" data-ticket-type="earlyBird">-</button>
+              <input type="number" id="early-bird-quantity" class="quantity-input" value="0" min="0" max="10">
+              <button class="quantity-btn plus-btn" data-ticket-type="earlyBird">+</button>
+            </div>
+          </div>
+          
+          <div class="ticket-type">
+            <div class="ticket-info">
+              <h4>Regular</h4>
+              <p id="regular-price">$0</p>
+            </div>
+            <div class="ticket-quantity">
+              <button class="quantity-btn minus-btn" data-ticket-type="regular">-</button>
+              <input type="number" id="regular-quantity" class="quantity-input" value="0" min="0" max="10">
+              <button class="quantity-btn plus-btn" data-ticket-type="regular">+</button>
+            </div>
+          </div>
+          
+          <div class="ticket-type">
+            <div class="ticket-info">
+              <h4>VIP</h4>
+              <p id="vip-price">$0</p>
+            </div>
+            <div class="ticket-quantity">
+              <button class="quantity-btn minus-btn" data-ticket-type="vip">-</button>
+              <input type="number" id="vip-quantity" class="quantity-input" value="0" min="0" max="10">
+              <button class="quantity-btn plus-btn" data-ticket-type="vip">+</button>
+            </div>
+          </div>
+        </div>
+        
+        <div class="modal-footer">
+          <div class="total-amount">
+            <h3>Total: <span id="total-amount">$0</span></h3>
+          </div>
+          <button id="proceed-to-checkout" class="checkout-btn">Proceed to Checkout</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script src="../js/events.js"></script>
+</body>
+</html>
+
+
+        
+          
+          
+           
+          
+            
+
+            
+       
