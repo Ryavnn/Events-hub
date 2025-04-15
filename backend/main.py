@@ -267,7 +267,7 @@ def logout():
 
 # Event API Routes
 @app.route('/api/events', methods=['GET'])
-@token_required
+
 def get_events():
     # Parse query parameters for filtering and pagination
     page = request.args.get('page', 1, type=int)
@@ -841,6 +841,53 @@ def get_revenue_by_months():
         })
     
     return result
+
+# Add a route to handle checkout requests
+@app.route('/api/checkout', methods=['POST'])
+def handle_checkout():
+    try:
+        # Parse the request data
+        data = request.get_json()
+        
+        # Extract customer and order details
+        customer_name = data.get('customerName')
+        customer_email = data.get('customerEmail')
+        tickets = data.get('tickets')
+        event_id = data.get('eventId')
+        total_amount = data.get('totalAmount')
+        payment_method = data.get('paymentMethod')
+
+        # Validate required fields
+        if not all([customer_name, customer_email, tickets, event_id, total_amount, payment_method]):
+            return jsonify({'error': 'Missing required fields'}), 400
+
+        # Update the database (e.g., reduce ticket quantities, log the purchase)
+        # Assuming a Ticket and Event model exists
+        event = Event.query.get(event_id)
+        if not event:
+            return jsonify({'error': 'Event not found'}), 404
+
+        for ticket_type, quantity in tickets.items():
+            if quantity > 0:
+                ticket = Ticket.query.filter_by(event_id=event_id, type=ticket_type).first()
+                if not ticket or ticket.quantity < quantity:
+                    return jsonify({'error': f'Insufficient {ticket_type} tickets available'}), 400
+                ticket.quantity -= quantity
+
+        # Update event stats
+        event.tickets_sold += sum(tickets.values())
+        event.revenue += total_amount
+
+        # Commit changes to the database
+        db.session.commit()
+
+        # Return success response
+        return jsonify({'message': 'Checkout successful'}), 200
+
+    except Exception as e:
+        print(f'Error during checkout: {e}')
+        return jsonify({'error': 'An error occurred during checkout'}), 500
+
 if __name__ == '__main__':
     with app.app_context():
         create_admin()

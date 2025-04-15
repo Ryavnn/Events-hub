@@ -30,6 +30,54 @@ function setupEventListeners() {
         window.location.href = "reports.html";
       }
     });
+    const closeButton = document.querySelector(".close-modal");
+    if (closeButton) {
+      closeButton.addEventListener("click", function () {
+        document.getElementById("event-modal").style.display = "none";
+      });
+    }
+
+    // Close modal when clicking outside the modal content
+    window.addEventListener("click", function (e) {
+      const modal = document.getElementById("event-modal");
+      if (e.target === modal) {
+        modal.style.display = "none";
+      }
+    });
+
+    // Add event listeners for quantity buttons
+    const minusButtons = document.querySelectorAll(".minus-btn");
+    const plusButtons = document.querySelectorAll(".plus-btn");
+
+    minusButtons.forEach((btn) => {
+      btn.addEventListener("click", function () {
+        const ticketType = this.getAttribute("data-ticket-type");
+        decreaseQuantity(ticketType);
+      });
+    });
+
+    plusButtons.forEach((btn) => {
+      btn.addEventListener("click", function () {
+        const ticketType = this.getAttribute("data-ticket-type");
+        increaseQuantity(ticketType);
+      });
+    });
+
+    // Add event listener for quantity inputs
+    const quantityInputs = document.querySelectorAll(".quantity-input");
+    quantityInputs.forEach((input) => {
+      input.addEventListener("change", function () {
+        updateTotal();
+      });
+    });
+
+    // Add event listener for checkout button
+    const checkoutButton = document.getElementById("proceed-to-checkout");
+    if (checkoutButton) {
+      checkoutButton.addEventListener("click", function () {
+        proceedToCheckout();
+      });
+    }
   });
 
   // Search functionality
@@ -625,9 +673,135 @@ function editEvent(eventId) {
 }
 
 // View event details
+// Function to open event modal with event data
 function viewEvent(eventId) {
-  // Redirect to event details page
-  window.location.href = `event-details.html?id=${eventId}`;
+  // Fetch event details from API
+  fetch(`${API_BASE_URL}/events/${eventId}`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${localStorage.getItem("authToken")}`,
+    },
+  })
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+      return response.json();
+    })
+    .then((event) => {
+      // Get the modal element
+      const modal = document.getElementById("event-modal");
+      if (!modal) {
+        console.error("Modal element not found");
+        return;
+      }
+
+      // Update modal content with event data
+      document.getElementById("modal-event-title").textContent = event.name;
+
+      // Set image source if available, otherwise use placeholder
+      const imageElement = document.getElementById("modal-event-image");
+      if (event.imageUrl) {
+        imageElement.src = event.imageUrl;
+      } else {
+        imageElement.src = "../images/placeholder-event.jpg";
+      }
+
+      document.getElementById("modal-event-description").textContent =
+        event.description || "No description available";
+      document.getElementById("modal-event-date").textContent = `Date: ${
+        event.startDate
+      }${event.endDate ? ` - ${event.endDate}` : ""}`;
+      document.getElementById(
+        "modal-event-location"
+      ).textContent = `Location: ${event.venue}`;
+
+      // Update ticket prices
+      const tickets = event.tickets || {};
+      document.getElementById("early-bird-price").textContent = tickets
+        .earlyBird?.price
+        ? `$${tickets.earlyBird.price}`
+        : "N/A";
+      document.getElementById("regular-price").textContent = tickets.regular
+        ?.price
+        ? `$${tickets.regular.price}`
+        : "N/A";
+      document.getElementById("vip-price").textContent = tickets.vip?.price
+        ? `$${tickets.vip.price}`
+        : "N/A";
+
+      // Reset ticket quantities
+      document.getElementById("early-bird-quantity").value = 0;
+      document.getElementById("regular-quantity").value = 0;
+      document.getElementById("vip-quantity").value = 0;
+
+      // Store the selected event ID
+      modal.setAttribute("data-event-id", eventId);
+
+      // Update total
+      updateTotal();
+
+      // Show modal
+      modal.style.display = "block";
+    })
+    .catch((error) => {
+      console.error("Error fetching event details:", error);
+      showNotification(
+        "Failed to load event details. Please try again.",
+        "error"
+      );
+    });
+}
+
+// Add this function for handling ticket quantities and totals
+function updateTotal() {
+  const eventId = document
+    .getElementById("event-modal")
+    .getAttribute("data-event-id");
+  if (!eventId) return;
+
+  // Get quantities
+  const earlyBirdQty =
+    parseInt(document.getElementById("early-bird-quantity").value) || 0;
+  const regularQty =
+    parseInt(document.getElementById("regular-quantity").value) || 0;
+  const vipQty = parseInt(document.getElementById("vip-quantity").value) || 0;
+
+  // Get prices from displayed values
+  const earlyBirdPrice =
+    parseFloat(
+      document.getElementById("early-bird-price").textContent.replace("$", "")
+    ) || 0;
+  const regularPrice =
+    parseFloat(
+      document.getElementById("regular-price").textContent.replace("$", "")
+    ) || 0;
+  const vipPrice =
+    parseFloat(
+      document.getElementById("vip-price").textContent.replace("$", "")
+    ) || 0;
+
+  // Calculate total
+  const totalAmount =
+    earlyBirdQty * earlyBirdPrice +
+    regularQty * regularPrice +
+    vipQty * vipPrice;
+
+  // Update total display
+  document.getElementById("total-amount").textContent = `$${totalAmount.toFixed(
+    2
+  )}`;
+
+  // Enable/disable checkout button
+  const checkoutButton = document.getElementById("proceed-to-checkout");
+  if (totalAmount > 0) {
+    checkoutButton.removeAttribute("disabled");
+    checkoutButton.style.opacity = "1";
+  } else {
+    checkoutButton.setAttribute("disabled", "disabled");
+    checkoutButton.style.opacity = "0.5";
+  }
 }
 
 // Delete an event
@@ -645,7 +819,7 @@ function deleteEvent(eventId) {
     headers: {
       "Content-Type": "application/json",
       Authorization: `Bearer ${localStorage.getItem("authToken")}`,
-    }
+    },
   })
     .then((response) => {
       if (!response.ok) {
@@ -733,4 +907,82 @@ function logout() {
       console.error("Error logging out:", error);
       window.location.href = "login.html";
     });
+}
+// Function to decrease ticket quantity
+function decreaseQuantity(ticketType) {
+  const inputElement = getQuantityInput(ticketType);
+  if (inputElement.value > 0) {
+    inputElement.value = parseInt(inputElement.value) - 1;
+    updateTotal();
+  }
+}
+
+// Function to increase ticket quantity
+function increaseQuantity(ticketType) {
+  const inputElement = getQuantityInput(ticketType);
+  if (parseInt(inputElement.value) < 10) {
+    inputElement.value = parseInt(inputElement.value) + 1;
+    updateTotal();
+  }
+}
+
+// Helper function to get the input element for a ticket type
+function getQuantityInput(ticketType) {
+  switch (ticketType) {
+    case "earlyBird":
+      return document.getElementById("early-bird-quantity");
+    case "regular":
+      return document.getElementById("regular-quantity");
+    case "vip":
+      return document.getElementById("vip-quantity");
+    default:
+      return null;
+  }
+}
+
+// Function to proceed to checkout
+function proceedToCheckout() {
+  const modal = document.getElementById("event-modal");
+  const eventId = modal.getAttribute("data-event-id");
+  if (!eventId) return;
+
+  // Get quantities
+  const earlyBirdQty = parseInt(document.getElementById("early-bird-quantity").value) || 0;
+  const regularQty = parseInt(document.getElementById("regular-quantity").value) || 0;
+  const vipQty = parseInt(document.getElementById("vip-quantity").value) || 0;
+
+  // Get prices from displayed values
+  const earlyBirdPrice = parseFloat(document.getElementById("early-bird-price").textContent.replace("$", "")) || 0;
+  const regularPrice = parseFloat(document.getElementById("regular-price").textContent.replace("$", "")) || 0;
+  const vipPrice = parseFloat(document.getElementById("vip-price").textContent.replace("$", "")) || 0;
+
+  // Calculate total
+  const totalAmount = 
+    earlyBirdQty * earlyBirdPrice +
+    regularQty * regularPrice +
+    vipQty * vipPrice;
+
+  if (totalAmount <= 0) return;
+
+  // Save checkout data to localStorage
+  const checkoutData = {
+    eventId: eventId,
+    eventName: document.getElementById("modal-event-title").textContent,
+    tickets: {
+      earlyBird: earlyBirdQty,
+      regular: regularQty,
+      vip: vipQty
+    },
+    prices: {
+      earlyBird: earlyBirdPrice,
+      regular: regularPrice,
+      vip: vipPrice
+    },
+    total: totalAmount
+  };
+
+  localStorage.setItem("checkoutData", JSON.stringify(checkoutData));
+
+  // Navigate to checkout page
+  window.location.href = "checkout.html";
 }

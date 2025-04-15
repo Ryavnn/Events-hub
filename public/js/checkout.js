@@ -74,7 +74,7 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Add ticket details
     if (checkoutData.tickets.earlyBird > 0) {
-      const earlyBirdTotal = checkoutData.tickets.earlyBird * checkoutData.eventDetails.tickets.earlyBird;
+      const earlyBirdTotal = checkoutData.tickets.earlyBird * checkoutData.eventDetails.tickets.earlyBird.price;
       summaryHTML += `
         <div class="summary-row">
           <span>Early Bird x ${checkoutData.tickets.earlyBird}</span>
@@ -84,7 +84,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     if (checkoutData.tickets.regular > 0) {
-      const regularTotal = checkoutData.tickets.regular * checkoutData.eventDetails.tickets.regular;
+      const regularTotal = checkoutData.tickets.regular * checkoutData.eventDetails.tickets.regular.price;
       summaryHTML += `
         <div class="summary-row">
           <span>Regular x ${checkoutData.tickets.regular}</span>
@@ -94,7 +94,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     if (checkoutData.tickets.vip > 0) {
-      const vipTotal = checkoutData.tickets.vip * checkoutData.eventDetails.tickets.vip;
+      const vipTotal = checkoutData.tickets.vip * checkoutData.eventDetails.tickets.vip.price;
       summaryHTML += `
         <div class="summary-row">
           <span>VIP x ${checkoutData.tickets.vip}</span>
