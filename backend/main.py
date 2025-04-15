@@ -29,6 +29,12 @@ CORS(app,
      allow_headers=["Content-Type", "Authorization"],
      methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"])
 
+# Add a route to handle OPTIONS requests globally
+@app.route('/', defaults={'path': ''}, methods=['OPTIONS'])
+@app.route('/<path:path>', methods=['OPTIONS'])
+def handle_options(path):
+    return '', 200
+
 app.secret_key = 'supersecretkey'  # Replace in production
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///admin.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
@@ -515,6 +521,8 @@ def determine_event_status(start_date, end_date=None):
             return "Active"
     except Exception:
         return "Upcoming"  # Default if dates are invalid
+    
+
 
 
 @app.route('/api/purchase-ticket', methods=['POST'])
@@ -712,6 +720,127 @@ def verify_ticket(ticket_number):
         'message': 'Ticket verified successfully', 
         'ticket': ticket.to_dict()
     })
+
+# Dashboard API Routes
+@app.route('/api/dashboard', methods=['GET'])
+@token_required
+def get_dashboard_data():
+    try:
+        # Get summary statistics
+        total_events = Event.query.count()
+        active_events = Event.query.filter_by(status='Active').count()
+        upcoming_events = Event.query.filter_by(status='Upcoming').count()
+        completed_events = Event.query.filter_by(status='Completed').count()
+        
+        # Calculate total tickets and revenue
+        total_tickets_sold = db.session.query(db.func.sum(TicketType.sold)).scalar() or 0
+        total_revenue = db.session.query(
+            db.func.sum(TicketType.price * TicketType.sold)
+        ).scalar() or 0
+        
+        # Get upcoming events (limit to 5)
+        upcoming = Event.query.filter_by(status='Upcoming').order_by(Event.start_date).limit(5).all()
+        
+        # Get recent ticket sales (limit to 10)
+        recent_tickets = Ticket.query.order_by(Ticket.purchase_date.desc()).limit(10).all()
+        
+        return jsonify({
+            'summary': {
+                'totalEvents': total_events,
+                'activeEvents': active_events,
+                'upcomingEvents': upcoming_events,
+                'completedEvents': completed_events,
+                'totalTicketsSold': total_tickets_sold,
+                'totalRevenue': round(total_revenue, 2)
+            },
+            'upcomingEvents': [event.to_dict() for event in upcoming],
+            'recentTickets': [ticket.to_dict() for ticket in recent_tickets]
+        })
+    except Exception as e:
+        return jsonify({'message': f'Error fetching dashboard data: {str(e)}'}), 500
+
+@app.route('/api/dashboard/revenue', methods=['GET'])
+@token_required
+def get_revenue_stats():
+    period = request.args.get('period', 'weekly')
+    
+    try:
+        today = datetime.now().date()
+        
+        if period == 'weekly':
+            # Get data for the last 7 days
+            data = get_revenue_by_days(7)
+            label_format = '%a'  # Abbreviated weekday name
+        elif period == 'monthly':
+            # Get data for the last 30 days
+            data = get_revenue_by_days(30)
+            label_format = '%d %b'  # Day and abbreviated month
+        elif period == 'yearly':
+            # Get data by month for the current year
+            data = get_revenue_by_months()
+            label_format = '%b'  # Abbreviated month name
+        else:
+            return jsonify({'message': 'Invalid period parameter'}), 400
+        
+        return jsonify({
+            'period': period,
+            'data': data
+        })
+    except Exception as e:
+        return jsonify({'message': f'Error fetching revenue stats: {str(e)}'}), 500
+
+def get_revenue_by_days(days):
+    result = []
+    today = datetime.now().date()
+    
+    for i in range(days - 1, -1, -1):
+        date = today - timedelta(days=i)
+        
+        # Query tickets purchased on this date
+        tickets = Ticket.query.filter(
+            db.func.date(Ticket.purchase_date) == date
+        ).all()
+        
+        # Calculate revenue
+        daily_revenue = sum(ticket.ticket_type.price for ticket in tickets)
+        tickets_count = len(tickets)
+        
+        result.append({
+            'date': date.strftime('%Y-%m-%d'),
+            'label': date.strftime('%a' if days <= 7 else '%d %b'),
+            'revenue': round(daily_revenue, 2),
+            'tickets': tickets_count
+        })
+    
+    return result
+
+def get_revenue_by_months():
+    result = []
+    today = datetime.now().date()
+    current_year = today.year
+    
+    for month in range(1, 13):
+        # Query tickets purchased in this month of the current year
+        tickets = Ticket.query.filter(
+            db.extract('year', Ticket.purchase_date) == current_year,
+            db.extract('month', Ticket.purchase_date) == month
+        ).all()
+        
+        # Calculate revenue
+        monthly_revenue = sum(ticket.ticket_type.price for ticket in tickets)
+        tickets_count = len(tickets)
+        
+        # Create a date object for the first day of the month
+        month_date = datetime(current_year, month, 1).date()
+        
+        result.append({
+            'date': month_date.strftime('%Y-%m-%d'),
+            'label': month_date.strftime('%b'),
+            'revenue': round(monthly_revenue, 2),
+            'tickets': tickets_count
+        })
+    
+    return result
 if __name__ == '__main__':
     with app.app_context():
         create_admin()
